@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/cf8505c9-5534-43a4-9e4d-2b568162344e/resourceGroups/smart-shelf/providers/Microsoft.Web/sites/smart-shelf-modern",
+    "appService.deploySubpath": "."
+}
