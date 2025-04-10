@@ -18,20 +18,33 @@ export interface GoogleBookDetails {
  */
 export async function searchBookDetails(book: ExtractedBook): Promise<GoogleBookDetails> {
   try {
-    // Create a search query using title and author
-    const query = `intitle:${encodeURIComponent(book.title)}${book.author ? ` inauthor:${encodeURIComponent(book.author)}` : ''}`;
+    // Separate encoding of search terms from the query structure
+    const titleTerm = encodeURIComponent(book.title.trim());
+    const authorTerm = book.author ? encodeURIComponent(book.author.trim()) : '';
     
-    // Make API request
-    const response = await axios.get(GOOGLE_BOOKS_API_URL, {
-      params: {
-        q: query,
-        maxResults: 1,
-        printType: 'books',
-      },
-    });
+    // Build the full URL directly to prevent double-encoding
+    let url = `${GOOGLE_BOOKS_API_URL}?q=`;
+    
+    // Add title search term
+    url += `intitle:${titleTerm}`;
+    
+    // Add author search term if available
+    if (authorTerm) {
+      url += `+inauthor:${authorTerm}`;
+    }
+    
+    // Add other parameters
+    url += '&maxResults=1&printType=books';
+    
+    // For debugging
+    console.log('Google Books API URL:', url);
+    
+    // Make direct API request with fully constructed URL
+    const response = await axios.get(url);
     
     // Return empty details if no results
     if (!response.data.items || response.data.items.length === 0) {
+      console.log(`No results found for book: "${book.title}" by "${book.author}"`);
       return {
         title: book.title,
         author: book.author,
@@ -53,6 +66,13 @@ export async function searchBookDetails(book: ExtractedBook): Promise<GoogleBook
           isbn13 = identifier.identifier;
         }
       }
+    }
+    
+    // Log success for debugging
+    if (isbn10 || isbn13) {
+      console.log(`Found ISBN for "${bookInfo.title}": ISBN-10=${isbn10 || 'N/A'}, ISBN-13=${isbn13 || 'N/A'}`);
+    } else {
+      console.log(`No ISBN found for "${bookInfo.title}"`);
     }
     
     // Return book details
