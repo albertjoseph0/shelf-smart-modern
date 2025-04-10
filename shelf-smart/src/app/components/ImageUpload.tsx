@@ -80,13 +80,21 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
       setUploadProgress(`Found ${books.length} books. Saving to database...`);
       
       // Save the books to the database
-      await fetch('/api/books', {
+      const saveResponse = await fetch('/api/books', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ books }),
       });
+      
+      if (!saveResponse.ok) {
+        const errorData = await saveResponse.json();
+        throw new Error(errorData.error || 'Failed to save books to database');
+      }
+
+      const savedBooks = await saveResponse.json();
+      console.log(`Successfully saved ${savedBooks.length} books to database`);
       
       // Reset form and notify parent
       if (fileInputRef.current) {

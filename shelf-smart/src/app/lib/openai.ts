@@ -1,4 +1,7 @@
 import OpenAI from 'openai';
+import axios from 'axios';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -11,12 +14,67 @@ export interface ExtractedBook {
 }
 
 /**
+ * Convert an image URL to base64 encoding
+ * @param imageUrl - URL of the image to convert
+ * @returns base64 encoded image
+ */
+async function convertImageToBase64(imageUrl: string): Promise<string> {
+  // Check if the imageUrl is already a Base64 string
+  if (imageUrl.startsWith('data:image')) {
+    return imageUrl;
+  }
+
+  // Check if the image URL is a local file path
+  if (imageUrl.startsWith('/') || imageUrl.startsWith('./')) {
+    try {
+      // Build the absolute file path
+      const filePath = imageUrl.startsWith('/')
+        ? path.join(process.cwd(), 'public', imageUrl.substring(1))
+        : path.join(process.cwd(), imageUrl);
+      
+      // Read the file
+      const imageBuffer = await fs.readFile(filePath);
+      
+      // Determine MIME type based on file extension
+      const extension = path.extname(filePath).toLowerCase().substring(1);
+      const mimeType = `image/${extension === 'jpg' ? 'jpeg' : extension}`;
+      
+      // Convert to base64
+      return `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
+    } catch (error) {
+      console.error('Error reading local file:', error);
+      throw new Error('Failed to read local image file');
+    }
+  }
+
+  // Handle remote URL
+  try {
+    const response = await axios.get(imageUrl, {
+      responseType: 'arraybuffer',
+    });
+    
+    // Get content type from response
+    const contentType = response.headers['content-type'];
+    
+    // Convert to base64
+    const base64 = Buffer.from(response.data, 'binary').toString('base64');
+    return `data:${contentType};base64,${base64}`;
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    throw new Error('Failed to fetch image from URL');
+  }
+}
+
+/**
  * Extract book information from an image using OpenAI's GPT-4o Vision API
- * @param imageUrl - The URL of the image to analyze
+ * @param imageUrl - The URL or Base64 data URL of the image to analyze
  * @returns An array of extracted book information (title and author)
  */
 export async function extractBooksFromImage(imageUrl: string): Promise<ExtractedBook[]> {
   try {
+    // Convert image to Base64 if it's not already
+    const base64Image = await convertImageToBase64(imageUrl);
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -27,7 +85,7 @@ export async function extractBooksFromImage(imageUrl: string): Promise<Extracted
         {
           role: "user",
           content: [
-            { type: "image_url", image_url: { url: imageUrl } }
+            { type: "image_url", image_url: { url: base64Image } }
           ],
         },
       ],
