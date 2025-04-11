@@ -10,22 +10,14 @@ export default function LandingPage() {
 
   // Function to scroll to auth section with enhanced focus
   const scrollToAuth = () => {
+    // Simply scroll to top of page
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Keep the highlight effect for the auth component
     if (authSectionRef.current) {
-      // Get the element's position
-      const elementRect = authSectionRef.current.getBoundingClientRect();
-      const absoluteElementTop = elementRect.top + window.pageYOffset;
-      
-      // Add offset for the sticky header (approximately 80px)
-      const headerOffset = 80;
-      const offsetTop = absoluteElementTop - headerOffset;
-      
-      // Scroll to the element with offset
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
-      });
-      
-      // Add a highlight effect after scrolling
       setTimeout(() => {
         // Add highlight animation
         authSectionRef.current?.classList.add('ring-4', 'ring-blue-500', 'ring-opacity-70');
