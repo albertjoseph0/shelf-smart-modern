@@ -2,8 +2,60 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRef, useEffect } from 'react';
+import AuthComponent from './AuthComponent';
 
 export default function LandingPage() {
+  const authSectionRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to auth section with enhanced focus
+  const scrollToAuth = () => {
+    if (authSectionRef.current) {
+      // Get the element's position
+      const elementRect = authSectionRef.current.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      
+      // Add offset for the sticky header (approximately 80px)
+      const headerOffset = 80;
+      const offsetTop = absoluteElementTop - headerOffset;
+      
+      // Scroll to the element with offset
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      
+      // Add a highlight effect after scrolling
+      setTimeout(() => {
+        // Add highlight animation
+        authSectionRef.current?.classList.add('ring-4', 'ring-blue-500', 'ring-opacity-70');
+        authSectionRef.current?.classList.add('scale-105');
+        
+        // Remove the effect after 1.5 seconds
+        setTimeout(() => {
+          authSectionRef.current?.classList.remove('ring-4', 'ring-blue-500', 'ring-opacity-70');
+          authSectionRef.current?.classList.remove('scale-105');
+        }, 1500);
+      }, 500);
+    }
+  };
+  
+  // Add a pulsing animation effect to draw attention to the auth component when page loads
+  useEffect(() => {
+    const authElement = authSectionRef.current;
+    if (authElement) {
+      // Add initial pulse animation
+      setTimeout(() => {
+        authElement.classList.add('animate-pulse');
+        
+        // Remove animation after 2 seconds
+        setTimeout(() => {
+          authElement.classList.remove('animate-pulse');
+        }, 2000);
+      }, 1000);
+    }
+  }, []);
+
   return (
     <main className="min-h-screen bg-white">
       {/* Header */}
@@ -17,9 +69,12 @@ export default function LandingPage() {
             <a href="#how-it-works" className="text-gray-600 hover:text-blue-600">How It Works</a>
             <a href="#faq" className="text-gray-600 hover:text-blue-600">FAQ</a>
           </nav>
-          <Link href="/upload" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
+          <button 
+            onClick={scrollToAuth} 
+            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+          >
             Get Started
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -32,17 +87,15 @@ export default function LandingPage() {
               Transform your bookshelf into a digital catalog instantly.
               Upload a photo, get all your books' details in seconds.
             </p>
-            <Link href="/upload" className="bg-blue-600 text-white text-lg py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block">
+            <button 
+              onClick={scrollToAuth} 
+              className="bg-blue-600 text-white text-lg py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block"
+            >
               Try It Now
-            </Link>
+            </button>
           </div>
-          <div className="md:w-1/2 flex justify-center">
-            <div className="relative w-full max-w-md h-80 bg-gray-200 rounded-lg shadow-lg">
-              {/* Placeholder for hero image */}
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                Bookshelf Image
-              </div>
-            </div>
+          <div id="auth-section" ref={authSectionRef} className="md:w-1/2 flex justify-center transition-all duration-500 transform hover:scale-105 rounded-xl p-2 pt-4">
+            <AuthComponent />
           </div>
         </div>
       </section>
@@ -111,9 +164,12 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="text-center mt-12">
-            <Link href="/upload" className="bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block">
+            <button
+              onClick={scrollToAuth}
+              className="bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block"
+            >
               Upload Your Books
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -191,9 +247,12 @@ export default function LandingPage() {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join thousands of book lovers who have simplified their cataloging process with Shelf Smart.
           </p>
-          <Link href="/upload" className="bg-white text-blue-600 py-3 px-8 rounded-md hover:bg-gray-100 transition inline-block text-lg font-medium">
+          <button
+            onClick={scrollToAuth}
+            className="bg-white text-blue-600 py-3 px-8 rounded-md hover:bg-gray-100 transition inline-block text-lg font-medium"
+          >
             Get Started Now
-          </Link>
+          </button>
         </div>
       </section>
 
