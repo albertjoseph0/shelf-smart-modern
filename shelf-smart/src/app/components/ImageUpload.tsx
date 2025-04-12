@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { addBooks } from '../lib/db';
 
 interface ImageUploadProps {
   onBooksAdded: () => void;

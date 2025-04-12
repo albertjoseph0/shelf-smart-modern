@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRef, useState } from 'react';
 import {
   SignInButton,
@@ -82,7 +81,7 @@ export default function LandingPage() {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Catalog Your Books With Just One Photo</h2>
             <p className="text-xl text-gray-600 mb-8">
               Transform your bookshelf into a digital catalog instantly.
-              Upload a photo, get all your books' details in seconds.
+              Upload a photo, get all your books&apos; details in seconds.
             </p>
             <button 
               onClick={handleCtaClick}
@@ -190,7 +189,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-gray-600">
-                "I've been looking for an easy way to catalog my home library for years. Shelf Smart saved me hours of manual data entry. Simply amazing!"
+                I&apos;ve been looking for an easy way to catalog my home library for years. Shelf Smart saved me hours of manual data entry. Simply amazing!
               </p>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg shadow">
@@ -202,7 +201,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-gray-600">
-                "As a small community librarian, this tool has revolutionized how we catalog donations. What used to take days now takes minutes."
+                &quot;As a small community librarian, this tool has revolutionized how we catalog donations. What used to take days now takes minutes.&quot;
               </p>
             </div>
           </div>
@@ -229,7 +228,7 @@ export default function LandingPage() {
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-xl font-semibold mb-2 text-gray-800">Is there a limit to how many books I can scan at once?</h3>
               <p className="text-gray-600">
-                There's no strict limit, but for best results, we recommend photos that capture 20-30 books at a time. For larger collections, you can take multiple photos.
+                There&apos;s no strict limit, but for best results, we recommend photos that capture 20-30 books at a time. For larger collections, you can take multiple photos.
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">

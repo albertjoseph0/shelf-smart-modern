@@ -108,7 +108,7 @@ export async function extractBooksFromImage(imageUrl: string): Promise<Extracted
     }
     
     // Map each book to ensure consistent format with title and author properties
-    return extractedBooks.map((book: any) => ({
+    return extractedBooks.map((book: ExtractedBook) => ({
       title: book.title || '',
       author: book.author || '',
     }));

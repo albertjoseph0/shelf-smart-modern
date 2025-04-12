@@ -1,4 +1,5 @@
 import sql from 'mssql';
+import { v4 as uuidv4 } from 'uuid';
 
 // Configuration for Azure SQL connection
 const config: sql.config = {
@@ -87,7 +88,7 @@ export async function getAllBooks(): Promise<Book[]> {
 export async function addBook(book: Omit<Book, 'id' | 'dateAdded'>): Promise<Book> {
   try {
     const pool = await getConnection();
-    const id = require('uuid').v4();
+    const id = uuidv4();
     
     const result = await pool.request()
       .input('id', sql.UniqueIdentifier, id)

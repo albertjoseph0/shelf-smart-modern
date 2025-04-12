@@ -69,6 +69,14 @@ yarn dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+6. Deploy to azure app service 
+
+https://www.c-sharpcorner.com/article/deploying-a-next-js-application-using-azure-app-service/
+
+npm run build
+
+
+
 ## Usage
 
 1. **Upload an Image**: Click the "Select a photo of your bookshelf" button and choose an image of your bookshelf.
