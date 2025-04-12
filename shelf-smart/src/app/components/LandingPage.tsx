@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRef, useEffect } from 'react';
-import AuthComponent from './AuthComponent';
+import { SignIn } from '@clerk/nextjs';
 
 export default function LandingPage() {
   const authSectionRef = useRef<HTMLDivElement>(null);
@@ -87,7 +87,7 @@ export default function LandingPage() {
             </button>
           </div>
           <div id="auth-section" ref={authSectionRef} className="md:w-1/2 flex justify-center transition-all duration-500 transform hover:scale-105 rounded-xl p-2 pt-4">
-            <AuthComponent />
+            <SignIn routing="hash" />
           </div>
         </div>
       </section>
