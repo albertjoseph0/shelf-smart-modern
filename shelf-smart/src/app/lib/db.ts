@@ -46,7 +46,7 @@ export async function initializeDatabase(): Promise<void> {
           isbn10 NVARCHAR(20),
           isbn13 NVARCHAR(20),
           dateAdded DATETIME DEFAULT GETDATE(),
-          shelfImageUrl NVARCHAR(MAX)
+          imageId NVARCHAR(255)
         )
       END
     `);
@@ -65,7 +65,7 @@ export interface Book {
   isbn10?: string;
   isbn13?: string;
   dateAdded: Date;
-  shelfImageUrl?: string;
+  imageId?: string;
 }
 
 // CRUD operations for books
@@ -96,10 +96,10 @@ export async function addBook(book: Omit<Book, 'id' | 'dateAdded'>): Promise<Boo
       .input('author', sql.NVarChar, book.author || null)
       .input('isbn10', sql.NVarChar, book.isbn10 || null)
       .input('isbn13', sql.NVarChar, book.isbn13 || null)
-      .input('shelfImageUrl', sql.NVarChar, book.shelfImageUrl || null)
+      .input('imageId', sql.NVarChar, book.imageId || null)
       .query(`
-        INSERT INTO books (id, title, author, isbn10, isbn13, shelfImageUrl)
-        VALUES (@id, @title, @author, @isbn10, @isbn13, @shelfImageUrl);
+        INSERT INTO books (id, title, author, isbn10, isbn13, imageId)
+        VALUES (@id, @title, @author, @isbn10, @isbn13, @imageId);
         
         SELECT * FROM books WHERE id = @id;
       `);

@@ -36,9 +36,9 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
       // Convert the image to base64
       const base64Image = await convertToBase64(file);
       
-      setUploadProgress('Uploading image...');
+      setUploadProgress('Processing image...');
       
-      // Upload the image
+      // Process the image
       const uploadResponse = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -48,10 +48,10 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
       });
 
       if (!uploadResponse.ok) {
-        throw new Error('Failed to upload image');
+        throw new Error('Failed to process image');
       }
 
-      const { imagePath } = await uploadResponse.json();
+      const { imageId, imageData } = await uploadResponse.json();
       
       setUploadProgress('Extracting books from image...');
       
@@ -61,7 +61,7 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ imagePath }),
+        body: JSON.stringify({ imageId, imageData }),
       });
 
       if (!extractResponse.ok) {

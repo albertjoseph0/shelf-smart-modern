@@ -1,33 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractBooksFromImage } from '../../lib/openai';
 import { getBooksDetails } from '../../lib/googleBooks';
-import { getImageUrl } from '../../lib/upload';
 
 // POST /api/extract - Extract books from image and get details
 export async function POST(request: NextRequest) {
   try {
-    const { imagePath } = await request.json();
+    const { imageData, imageId } = await request.json();
     
-    if (!imagePath) {
+    if (!imageData) {
       return NextResponse.json(
-        { error: 'Image path is required' },
+        { error: 'Image data is required' },
         { status: 400 }
       );
     }
     
-    // Get the full image URL
-    const imageUrl = getImageUrl(imagePath);
-    
     // Extract books from the image using OpenAI GPT-4o Vision
-    const extractedBooks = await extractBooksFromImage(imageUrl);
+    const extractedBooks = await extractBooksFromImage(imageData);
     
     // Get detailed information for each book using Google Books API
     const booksWithDetails = await getBooksDetails(extractedBooks);
     
-    // Add the image path to each book
+    // Add the image ID to each book for reference
     const books = booksWithDetails.map(book => ({
       ...book,
-      shelfImageUrl: imagePath
+      imageId
     }));
     
     return NextResponse.json({ books });

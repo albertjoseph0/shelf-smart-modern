@@ -1,7 +1,5 @@
 import OpenAI from 'openai';
 import axios from 'axios';
-import { promises as fs } from 'fs';
-import path from 'path';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -22,29 +20,6 @@ async function convertImageToBase64(imageUrl: string): Promise<string> {
   // Check if the imageUrl is already a Base64 string
   if (imageUrl.startsWith('data:image')) {
     return imageUrl;
-  }
-
-  // Check if the image URL is a local file path
-  if (imageUrl.startsWith('/') || imageUrl.startsWith('./')) {
-    try {
-      // Build the absolute file path
-      const filePath = imageUrl.startsWith('/')
-        ? path.join(process.cwd(), 'public', imageUrl.substring(1))
-        : path.join(process.cwd(), imageUrl);
-      
-      // Read the file
-      const imageBuffer = await fs.readFile(filePath);
-      
-      // Determine MIME type based on file extension
-      const extension = path.extname(filePath).toLowerCase().substring(1);
-      const mimeType = `image/${extension === 'jpg' ? 'jpeg' : extension}`;
-      
-      // Convert to base64
-      return `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
-    } catch (error) {
-      console.error('Error reading local file:', error);
-      throw new Error('Failed to read local image file');
-    }
   }
 
   // Handle remote URL

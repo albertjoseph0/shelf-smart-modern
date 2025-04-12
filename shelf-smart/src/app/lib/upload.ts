@@ -1,58 +1,45 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-// Directory to store uploaded images
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-
-// Ensure upload directory exists
-export async function ensureUploadDir() {
-  try {
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  } catch (error) {
-    console.error('Error creating upload directory:', error);
-  }
-}
-
 /**
- * Save a base64 encoded image to the uploads directory
+ * Process a base64 encoded image without saving it to disk
  * @param base64Image - The base64 encoded image data
- * @returns The URL path to the saved image
+ * @returns A unique identifier for the image data
  */
-export async function saveBase64Image(base64Image: string): Promise<string> {
-  await ensureUploadDir();
-  
-  // Extract the actual base64 data from the data URL
+export async function processBase64Image(base64Image: string): Promise<string> {
+  // Validate the base64 image format
   const matches = base64Image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
   
   if (!matches || matches.length !== 3) {
     throw new Error('Invalid base64 image format');
   }
   
-  const imageType = matches[1];
-  const imageData = matches[2];
-  const buffer = Buffer.from(imageData, 'base64');
+  // Generate a unique ID for this image
+  const imageId = uuidv4();
   
-  // Determine file extension
-  const extension = imageType.split('/')[1] || 'jpg';
-  
-  // Generate a unique filename
-  const filename = `${uuidv4()}.${extension}`;
-  const filePath = path.join(UPLOAD_DIR, filename);
-  
-  // Save the image
-  await fs.writeFile(filePath, buffer);
-  
-  // Return the URL path
-  return `/uploads/${filename}`;
+  // Return the image ID and the base64 data
+  return imageId;
 }
 
 /**
- * Get the full URL for an image path
- * @param imagePath - The image path relative to public directory
- * @returns The full URL for the image
+ * Get the full data URL for a base64 image
+ * @param base64Image - The base64 encoded image data
+ * @returns The validated base64 image data
  */
-export function getImageUrl(imagePath: string): string {
+export function getBase64ImageData(base64Image: string): string {
+  return base64Image;
+}
+
+// For backward compatibility
+export function getImageUrl(imageData: string): string {
+  // If it's already a base64 image, return as is
+  if (imageData.startsWith('data:image')) {
+    return imageData;
+  }
+  
+  // If we're dealing with a legacy path-based reference
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
-  return `${baseUrl}${imagePath}`;
-} 
+  return `${baseUrl}${imageData}`;
+}
+
+// Alias for backward compatibility
+export const saveBase64Image = processBase64Image; 

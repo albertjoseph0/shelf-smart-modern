@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveBase64Image } from '../../lib/upload';
+import { processBase64Image } from '../../lib/upload';
 
-// POST /api/upload - Upload a bookshelf image
+// POST /api/upload - Process a bookshelf image
 export async function POST(request: NextRequest) {
   try {
     const { image } = await request.json();
@@ -13,14 +13,18 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Save the image and get the image path
-    const imagePath = await saveBase64Image(image);
+    // Process the image and get a unique ID
+    const imageId = await processBase64Image(image);
     
-    return NextResponse.json({ imagePath });
+    // Return both the ID and the original base64 data
+    return NextResponse.json({ 
+      imageId, 
+      imageData: image 
+    });
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error('Error processing image:', error);
     return NextResponse.json(
-      { error: 'Failed to upload image' },
+      { error: 'Failed to process image' },
       { status: 500 }
     );
   }
