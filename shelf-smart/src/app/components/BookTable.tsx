@@ -93,11 +93,11 @@ export default function BookTable({ refreshTrigger }: BookTableProps) {
         <tbody className="divide-y divide-gray-200">
           {books.map((book) => (
             <tr key={book.id} className="hover:bg-gray-50">
-              <td className="py-4 px-4 text-sm">{book.title}</td>
-              <td className="py-4 px-4 text-sm">{book.author || '-'}</td>
-              <td className="py-4 px-4 text-sm font-mono">{book.isbn10 || '-'}</td>
-              <td className="py-4 px-4 text-sm font-mono">{book.isbn13 || '-'}</td>
-              <td className="py-4 px-4 text-sm">{formatDate(book.dateAdded)}</td>
+              <td className="py-4 px-4 text-sm text-gray-800">{book.title}</td>
+              <td className="py-4 px-4 text-sm text-gray-800">{book.author || '-'}</td>
+              <td className="py-4 px-4 text-sm font-mono text-gray-800">{book.isbn10 || '-'}</td>
+              <td className="py-4 px-4 text-sm font-mono text-gray-800">{book.isbn13 || '-'}</td>
+              <td className="py-4 px-4 text-sm text-gray-800">{formatDate(book.dateAdded)}</td>
             </tr>
           ))}
         </tbody>

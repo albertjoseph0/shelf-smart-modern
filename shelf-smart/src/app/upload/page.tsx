@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { UserButton } from "@clerk/nextjs";
 import ImageUpload from '../components/ImageUpload';
 import BookTable from '../components/BookTable';
 import ExportButton from '../components/ExportButton';
@@ -27,7 +28,10 @@ export default function UploadPage() {
               </Link>
               <h1 className="text-3xl font-bold text-gray-800">ShelfSmart</h1>
             </div>
-            <p className="text-gray-600">Catalog your physical book collection from shelf images</p>
+            <div className="flex items-center gap-4">
+              <p className="text-gray-600">Catalog your physical book collection from shelf images</p>
+              <UserButton afterSignOutUrl="/" />
+            </div>
           </header>
 
           <ImageUpload onBooksAdded={handleBooksAdded} />

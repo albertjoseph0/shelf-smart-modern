@@ -2,8 +2,38 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRef, useState } from 'react';
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 export default function LandingPage() {
+  const [highlightAuth, setHighlightAuth] = useState(false);
+  const authButtonsRef = useRef<HTMLDivElement>(null);
+
+  // Function to handle CTA button clicks
+  const handleCtaClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    
+    // Scroll to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Highlight auth buttons
+    setHighlightAuth(true);
+    
+    // Remove highlight after animation completes
+    setTimeout(() => {
+      setHighlightAuth(false);
+    }, 2000);
+  };
+
   return (
     <main className="min-h-screen bg-white">
       {/* Header */}
@@ -17,9 +47,31 @@ export default function LandingPage() {
             <a href="#how-it-works" className="text-gray-600 hover:text-blue-600">How It Works</a>
             <a href="#faq" className="text-gray-600 hover:text-blue-600">FAQ</a>
           </nav>
-          <Link href="/upload" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
-            Get Started
-          </Link>
+          <div 
+            ref={authButtonsRef}
+            className={`flex items-center gap-4 transition-all duration-500 ${
+              highlightAuth ? 'transform scale-110 shadow-lg p-2 rounded-lg bg-blue-50 animate-pulse' : ''
+            }`}
+          >
+            <SignedOut>
+              <SignInButton>
+                <button className="text-blue-600 hover:text-blue-800 border border-blue-600 py-2 px-4 rounded-md transition">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton>
+                <button className="text-blue-600 hover:text-blue-800 border border-blue-600 py-2 px-4 rounded-md transition">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/upload" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                Dashboard
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </div>
         </div>
       </header>
 
@@ -32,9 +84,12 @@ export default function LandingPage() {
               Transform your bookshelf into a digital catalog instantly.
               Upload a photo, get all your books' details in seconds.
             </p>
-            <Link href="/upload" className="bg-blue-600 text-white text-lg py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block">
+            <button 
+              onClick={handleCtaClick}
+              className="bg-blue-600 text-white text-lg py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block"
+            >
               Try It Now
-            </Link>
+            </button>
           </div>
           <div className="md:w-1/2 flex justify-center">
             <div className="relative w-full max-w-md h-80 bg-gray-200 rounded-lg shadow-lg">
@@ -111,9 +166,12 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="text-center mt-12">
-            <Link href="/upload" className="bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block">
-              Upload Your Books
-            </Link>
+            <button 
+              onClick={handleCtaClick}
+              className="bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition inline-block"
+            >
+              Get Started
+            </button>
           </div>
         </div>
       </section>
@@ -157,25 +215,25 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Frequently Asked Questions</h2>
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">How accurate is the book recognition?</h3>
+              <h3 className="text-xl font-semibold mb-2 text-gray-800">How accurate is the book recognition?</h3>
               <p className="text-gray-600">
                 Our system can recognize most books with clearly visible spines. The accuracy depends on image quality, lighting, and how visible the book spines are. We recommend taking clear, well-lit photos.
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">Which book management apps can I export to?</h3>
+              <h3 className="text-xl font-semibold mb-2 text-gray-800">Which book management apps can I export to?</h3>
               <p className="text-gray-600">
                 You can export your catalog as a CSV file, which is compatible with most book management apps including Libib, LibraryThing, BookBuddy, and more.
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">Is there a limit to how many books I can scan at once?</h3>
+              <h3 className="text-xl font-semibold mb-2 text-gray-800">Is there a limit to how many books I can scan at once?</h3>
               <p className="text-gray-600">
                 There's no strict limit, but for best results, we recommend photos that capture 20-30 books at a time. For larger collections, you can take multiple photos.
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">Is my book data kept private?</h3>
+              <h3 className="text-xl font-semibold mb-2 text-gray-800">Is my book data kept private?</h3>
               <p className="text-gray-600">
                 Yes, we take privacy seriously. Your book data is only used to provide you with the service and is not shared with third parties. You can delete your data at any time.
               </p>
@@ -191,9 +249,12 @@ export default function LandingPage() {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join thousands of book lovers who have simplified their cataloging process with Shelf Smart.
           </p>
-          <Link href="/upload" className="bg-white text-blue-600 py-3 px-8 rounded-md hover:bg-gray-100 transition inline-block text-lg font-medium">
+          <button 
+            onClick={handleCtaClick}
+            className="bg-white text-blue-600 py-3 px-8 rounded-md hover:bg-gray-100 transition inline-block text-lg font-medium"
+          >
             Get Started Now
-          </Link>
+          </button>
         </div>
       </section>
 
