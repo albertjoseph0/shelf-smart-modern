@@ -32,10 +32,12 @@ export async function getConnection(): Promise<sql.ConnectionPool> {
   }
 }
 
-// Initialize the books table if it doesn't exist
+// Initialize the database tables if they don't exist
 export async function initializeDatabase(): Promise<void> {
   try {
     const pool = await getConnection();
+    
+    // Create books table if it doesn't exist
     await pool.request().query(`
       IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'books')
       BEGIN
@@ -50,6 +52,23 @@ export async function initializeDatabase(): Promise<void> {
         )
       END
     `);
+    
+    // Create Account table if it doesn't exist
+    await pool.request().query(`
+      IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Account')
+      BEGIN
+        CREATE TABLE Account (
+          id INT IDENTITY(1,1) PRIMARY KEY,
+          userId NVARCHAR(255) UNIQUE NOT NULL,
+          createdAt DATETIME2 DEFAULT SYSUTCDATETIME() NOT NULL,
+          updatedAt DATETIME2 DEFAULT SYSUTCDATETIME() NOT NULL,
+          stripeCustomerId NVARCHAR(255) NULL,
+          package NVARCHAR(255) NULL,
+          status NVARCHAR(255) DEFAULT 'INACTIVE' NOT NULL
+        )
+      END
+    `);
+    
     console.log('Database initialized');
   } catch (error) {
     console.error('Database initialization error:', error);
@@ -66,6 +85,17 @@ export interface Book {
   isbn13?: string;
   dateAdded: Date;
   imageId?: string;
+}
+
+// Account interface
+export interface Account {
+  id: number;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  stripeCustomerId?: string;
+  package?: string;
+  status: string;
 }
 
 // CRUD operations for books
@@ -124,6 +154,46 @@ export async function addBooks(books: Omit<Book, 'id' | 'dateAdded'>[]): Promise
     return addedBooks;
   } catch (error) {
     console.error('Error adding multiple books:', error);
+    throw error;
+  }
+}
+
+// CRUD operations for accounts
+
+// Get account by userId
+export async function getAccountByUserId(userId: string): Promise<Account | null> {
+  try {
+    const pool = await getConnection();
+    const result = await pool.request()
+      .input('userId', sql.NVarChar, userId)
+      .query(`
+        SELECT * FROM Account WHERE userId = @userId
+      `);
+    
+    return result.recordset[0] || null;
+  } catch (error) {
+    console.error('Error getting account:', error);
+    throw error;
+  }
+}
+
+// Create account
+export async function createAccount(userId: string): Promise<Account> {
+  try {
+    const pool = await getConnection();
+    
+    const result = await pool.request()
+      .input('userId', sql.NVarChar, userId)
+      .query(`
+        INSERT INTO Account (userId)
+        VALUES (@userId);
+        
+        SELECT * FROM Account WHERE userId = @userId;
+      `);
+    
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error creating account:', error);
     throw error;
   }
 } 
