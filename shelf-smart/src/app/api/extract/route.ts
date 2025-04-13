@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractBooksFromImage } from '../../lib/openai';
 import { getBooksDetails } from '../../lib/googleBooks';
+import { auth } from '@clerk/nextjs/server';
 
 // POST /api/extract - Extract books from image and get details
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
     const { imageData, imageId } = await request.json();
     
     if (!imageData) {
@@ -20,10 +30,11 @@ export async function POST(request: NextRequest) {
     // Get detailed information for each book using Google Books API
     const booksWithDetails = await getBooksDetails(extractedBooks);
     
-    // Add the image ID to each book for reference
+    // Add the image ID and userId to each book for reference
     const books = booksWithDetails.map(book => ({
       ...book,
-      imageId
+      imageId,
+      userId
     }));
     
     return NextResponse.json({ books });

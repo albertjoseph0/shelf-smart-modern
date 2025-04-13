@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllBooks, addBook, addBooks, Book } from '../../lib/db';
+import { auth } from '@clerk/nextjs/server';
 
 // GET /api/books - Get all books
 export async function GET() {
   try {
-    const books = await getAllBooks();
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
+    const books = await getAllBooks(userId);
     return NextResponse.json(books);
   } catch (error) {
     console.error('Error getting books:', error);
@@ -18,6 +28,15 @@ export async function GET() {
 // POST /api/books - Add a new book or multiple books
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
     const requestData = await request.json();
     
     // Handle array of books
@@ -38,15 +57,15 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // Add the books to the database
-      const newBooks = await addBooks(requestData.books);
+      // Add the books to the database with userId
+      const newBooks = await addBooks(requestData.books, userId);
       
       return NextResponse.json(newBooks, { status: 201 });
     } 
     // Handle single book
     else if (requestData.title) {
-      // Add the book to the database
-      const newBook = await addBook(requestData);
+      // Add the book to the database with userId
+      const newBook = await addBook(requestData, userId);
       
       return NextResponse.json(newBook, { status: 201 });
     }

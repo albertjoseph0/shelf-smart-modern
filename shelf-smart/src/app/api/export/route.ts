@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
 import { getAllBooks } from '../../lib/db';
+import { auth } from '@clerk/nextjs/server';
 
 // GET /api/export - Export books as CSV
 export async function GET() {
   try {
-    const books = await getAllBooks();
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
+    const books = await getAllBooks(userId);
     
     if (!books || books.length === 0) {
       return NextResponse.json(

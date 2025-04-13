@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processBase64Image } from '../../lib/upload';
+import { auth } from '@clerk/nextjs/server';
 
 // POST /api/upload - Process a bookshelf image
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
     const { image } = await request.json();
     
     if (!image) {

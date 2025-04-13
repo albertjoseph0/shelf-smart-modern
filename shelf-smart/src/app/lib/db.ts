@@ -46,7 +46,8 @@ export async function initializeDatabase(): Promise<void> {
           isbn10 NVARCHAR(20),
           isbn13 NVARCHAR(20),
           dateAdded DATETIME DEFAULT GETDATE(),
-          imageId NVARCHAR(255)
+          imageId NVARCHAR(255),
+          userId NVARCHAR(255) NOT NULL
         )
       END
     `);
@@ -66,17 +67,20 @@ export interface Book {
   isbn13?: string;
   dateAdded: Date;
   imageId?: string;
+  userId: string;
 }
 
 // CRUD operations for books
 
-// Get all books
-export async function getAllBooks(): Promise<Book[]> {
+// Get all books for a specific user
+export async function getAllBooks(userId: string): Promise<Book[]> {
   try {
     const pool = await getConnection();
-    const result = await pool.request().query(`
-      SELECT * FROM books ORDER BY dateAdded DESC
-    `);
+    const result = await pool.request()
+      .input('userId', sql.NVarChar, userId)
+      .query(`
+        SELECT * FROM books WHERE userId = @userId ORDER BY dateAdded DESC
+      `);
     return result.recordset;
   } catch (error) {
     console.error('Error getting books:', error);
@@ -85,7 +89,7 @@ export async function getAllBooks(): Promise<Book[]> {
 }
 
 // Add a book
-export async function addBook(book: Omit<Book, 'id' | 'dateAdded'>): Promise<Book> {
+export async function addBook(book: Omit<Book, 'id' | 'dateAdded'>, userId: string): Promise<Book> {
   try {
     const pool = await getConnection();
     const id = uuidv4();
@@ -97,9 +101,10 @@ export async function addBook(book: Omit<Book, 'id' | 'dateAdded'>): Promise<Boo
       .input('isbn10', sql.NVarChar, book.isbn10 || null)
       .input('isbn13', sql.NVarChar, book.isbn13 || null)
       .input('imageId', sql.NVarChar, book.imageId || null)
+      .input('userId', sql.NVarChar, userId)
       .query(`
-        INSERT INTO books (id, title, author, isbn10, isbn13, imageId)
-        VALUES (@id, @title, @author, @isbn10, @isbn13, @imageId);
+        INSERT INTO books (id, title, author, isbn10, isbn13, imageId, userId)
+        VALUES (@id, @title, @author, @isbn10, @isbn13, @imageId, @userId);
         
         SELECT * FROM books WHERE id = @id;
       `);
@@ -112,12 +117,12 @@ export async function addBook(book: Omit<Book, 'id' | 'dateAdded'>): Promise<Boo
 }
 
 // Add multiple books at once
-export async function addBooks(books: Omit<Book, 'id' | 'dateAdded'>[]): Promise<Book[]> {
+export async function addBooks(books: Omit<Book, 'id' | 'dateAdded'>[], userId: string): Promise<Book[]> {
   try {
     const addedBooks: Book[] = [];
     
     for (const book of books) {
-      const addedBook = await addBook(book);
+      const addedBook = await addBook(book, userId);
       addedBooks.push(addedBook);
     }
     
