@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { extractBooksFromImage } from '../../lib/openai';
-import { getBooksDetails } from '../../lib/googleBooks';
+import { extractBooksFromImage } from '../../../lib/openai';
+import { getBooksDetails } from '../../../lib/googleBooks';
 
 // POST /api/extract - Extract books from image and get details
 export async function POST(request: NextRequest) {

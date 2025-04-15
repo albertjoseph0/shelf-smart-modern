@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { UserButton } from "@clerk/nextjs";
-import ImageUpload from '../components/ImageUpload';
-import BookTable from '../components/BookTable';
-import ExportButton from '../components/ExportButton';
+import ImageUpload from '../../components/ImageUpload';
+import BookTable from '../../components/BookTable';
+import ExportButton from '../../components/ExportButton';
 
 export default function UploadPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);

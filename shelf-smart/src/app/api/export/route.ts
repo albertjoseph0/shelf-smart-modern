@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllBooks } from '../../lib/db';
+import { getAllBooks } from '../../../lib/db';
 
 // GET /api/export - Export books as CSV
 export async function GET() {
