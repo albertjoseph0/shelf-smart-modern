@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processBase64Image } from '../../lib/upload';
+import { processBase64Image } from '../../../lib/upload';
 
 // POST /api/upload - Process a bookshelf image
 export async function POST(request: NextRequest) {

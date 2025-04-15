@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllBooks, addBook, addBooks, Book } from '../../lib/db';
+import { getAllBooks, addBook, addBooks, Book } from '../../../lib/db';
 
 // GET /api/books - Get all books
 export async function GET() {
