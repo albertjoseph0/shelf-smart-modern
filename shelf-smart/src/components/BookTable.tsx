@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Book } from '../lib/db';
+// Import Book type from generated Prisma client
+import { Book } from '@/generated/prisma'; 
 
 interface BookTableProps {
   refreshTrigger: number;
@@ -29,7 +30,8 @@ export default function BookTable({ refreshTrigger }: BookTableProps) {
       }
       
       const data = await response.json();
-      setBooks(data);
+      // Extract the books array from the response object
+      setBooks(data.books || []); // Use data.books and provide fallback
     } catch (err) {
       console.error('Error fetching books:', err);
       setError('Failed to load books. Please try again.');

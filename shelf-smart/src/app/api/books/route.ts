@@ -1,67 +1,80 @@
+import { prisma } from '@/lib/prisma'; // Import prisma client
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllBooks, addBook, addBooks, Book } from '../../../lib/db';
+import { auth } from '@clerk/nextjs/server';
 
-// GET /api/books - Get all books
+// GET /api/books - Fetch all books
 export async function GET() {
+  const { userId } = await auth();
+  if (!userId) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
   try {
-    const books = await getAllBooks();
-    return NextResponse.json(books);
+    // Fetch books using Prisma
+    const books = await prisma.book.findMany({
+      orderBy: {
+        dateAdded: 'desc',
+      },
+    });
+    return NextResponse.json({ books });
   } catch (error) {
-    console.error('Error getting books:', error);
-    return NextResponse.json(
-      { error: 'Failed to retrieve books' },
-      { status: 500 }
-    );
+    console.error('Error fetching books:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
 
 // POST /api/books - Add a new book or multiple books
 export async function POST(request: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
   try {
     const requestData = await request.json();
-    
-    // Handle array of books
+
+    // Check if the request is for adding multiple books
     if (Array.isArray(requestData.books)) {
-      if (requestData.books.length === 0) {
-        return NextResponse.json(
-          { error: 'No books provided' },
-          { status: 400 }
-        );
+      // Add multiple books using Prisma
+      const booksData = requestData.books.map((book: any) => ({
+        title: book.title,
+        author: book.author || null,
+        isbn10: book.isbn10 || null,
+        isbn13: book.isbn13 || null,
+        imageId: book.imageId || null,
+        // Prisma handles default for dateAdded and generates id
+      }));
+      
+      const newBooks = await prisma.book.createMany({
+        data: booksData,
+        // skipDuplicates: true, // Removed due to type error/compatibility
+      });
+      
+      // Note: createMany returns a count, not the created records.
+      // If you need the created records, you might need to query them again or use individual create calls in a transaction.
+      return NextResponse.json({ count: newBooks.count }, { status: 201 });
+
+    } else {
+      // Add a single book using Prisma
+      const { title, author, isbn10, isbn13, imageId } = requestData;
+      if (!title) {
+        return NextResponse.json({ error: 'Title is required' }, { status: 400 });
       }
       
-      // Validate required fields in all books
-      const invalidBooks = requestData.books.filter((book: Partial<Book>) => !book.title);
-      if (invalidBooks.length > 0) {
-        return NextResponse.json(
-          { error: 'All books must have a title' },
-          { status: 400 }
-        );
-      }
-      
-      // Add the books to the database
-      const newBooks = await addBooks(requestData.books);
-      
-      return NextResponse.json(newBooks, { status: 201 });
-    } 
-    // Handle single book
-    else if (requestData.title) {
-      // Add the book to the database
-      const newBook = await addBook(requestData);
-      
-      return NextResponse.json(newBook, { status: 201 });
-    }
-    // Handle invalid request
-    else {
-      return NextResponse.json(
-        { error: 'Invalid request. Provide either a book object or an array of books' },
-        { status: 400 }
-      );
+      const newBook = await prisma.book.create({
+        data: {
+          title,
+          author: author || null,
+          isbn10: isbn10 || null,
+          isbn13: isbn13 || null,
+          imageId: imageId || null,
+          // Prisma handles default for dateAdded and generates id
+        },
+      });
+      return NextResponse.json({ book: newBook }, { status: 201 });
     }
   } catch (error) {
     console.error('Error adding book(s):', error);
-    return NextResponse.json(
-      { error: 'Failed to add book(s)' },
-      { status: 500 }
-    );
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 } 

@@ -1,33 +1,44 @@
+import { prisma } from '@/lib/prisma'; // Import prisma client
 import { NextResponse } from 'next/server';
-import { getAllBooks } from '../../../lib/db';
+import { auth } from '@clerk/nextjs/server';
+
+// Remove the old db import
+// import { getAllBooks } from '../../../lib/db';
 
 // GET /api/export - Export books as CSV
 export async function GET() {
+  const { userId } = await auth();
+  if (!userId) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
   try {
-    const books = await getAllBooks();
-    
-    if (!books || books.length === 0) {
-      return NextResponse.json(
-        { error: 'No books to export' },
-        { status: 404 }
-      );
-    }
-    
-    // Format the data for CSV
-    const rows = books.map(book => ({
-      title: book.title,
-      author: book.author || '',
-      isbn10: book.isbn10 || '',
-      isbn13: book.isbn13 || '',
-      dateAdded: book.dateAdded ? new Date(book.dateAdded).toISOString().split('T')[0] : ''
-    }));
-    
-    return NextResponse.json({ books: rows });
+    // Fetch books using Prisma
+    const books = await prisma.book.findMany({
+      orderBy: {
+        dateAdded: 'desc',
+      },
+    });
+
+    // Convert books data to CSV format
+    const csvHeader = 'Title,Author,ISBN10,ISBN13,Date Added\n';
+    const csvBody = books
+      .map(
+        (book) =>
+          `"${book.title}","${book.author || ''}","${book.isbn10 || ''}","${book.isbn13 || ''}","${book.dateAdded.toISOString()}"`
+      )
+      .join('\n');
+    const csvContent = csvHeader + csvBody;
+
+    return new NextResponse(csvContent, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': 'attachment; filename="books.csv"',
+      },
+    });
   } catch (error) {
     console.error('Error exporting books:', error);
-    return NextResponse.json(
-      { error: 'Failed to export books' },
-      { status: 500 }
-    );
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 } 

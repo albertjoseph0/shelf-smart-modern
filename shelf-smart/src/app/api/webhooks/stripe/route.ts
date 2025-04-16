@@ -1,6 +1,7 @@
-import Stripe from 'stripe';
-import { updateAccountWithStripeInfo } from '@/lib/db';
-import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
+import { prisma } from '@/lib/prisma'; // Import prisma client
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   typescript: true,
@@ -75,7 +76,14 @@ export async function POST(request: NextRequest) {
         const status = 'ACTIVE';
 
         console.log(`Attempting to update DB for userId: ${userId} with StripeCustomerId: ${stripeCustomerId}, Package: ${packageName}`);
-        await updateAccountWithStripeInfo(userId, stripeCustomerId, packageName, status);
+        await prisma.account.update({
+          where: { userId: userId },
+          data: {
+            stripeCustomerId: stripeCustomerId,
+            package: packageName,
+            status: status,
+          },
+        });
         console.log(`DB update successful for userId: ${userId}`);
       } catch (error) { // Catch errors from Stripe API call or DB update
         console.error(`Webhook Error processing checkout.session.completed for userId ${userId}:`, error);
@@ -118,6 +126,11 @@ export async function POST(request: NextRequest) {
       if (userId) {
         console.log(`DB update placeholder called for userId: ${userId}`);
       }
+      break;
+    }
+    case 'invoice.payment_failed': {
+      // Handle failed payment
+      console.log('Payment failed event:', event.data.object);
       break;
     }
     default:

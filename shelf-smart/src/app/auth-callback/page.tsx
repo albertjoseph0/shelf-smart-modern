@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
-import { getAccountByUserId } from '../../lib/db'; // Adjust path if necessary
+import { prisma } from '@/lib/prisma'; // Import prisma client
 
 export default async function AuthCallbackPage() {
   const { userId } = await auth();
@@ -16,10 +16,12 @@ export default async function AuthCallbackPage() {
 
   let account = null;
   
-  // Fetch account status
+  // Fetch account status using Prisma
   try {
     console.log('[AUTH_CALLBACK] Fetching account for user:', userId);
-    account = await getAccountByUserId(userId);
+    account = await prisma.account.findUnique({ // Use prisma.account.findUnique
+      where: { userId: userId }
+    });
     console.log('[AUTH_CALLBACK] Account data:', JSON.stringify(account, null, 2));
   } catch (error) {
     console.error('[AUTH_CALLBACK] Error fetching account:', error);

@@ -30,8 +30,8 @@ export async function POST(req: Request) {
 
     // Define success and cancel URLs
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const successUrl = `${baseUrl}/upload`; // New: Redirect to packages page on success
-    const cancelUrl = `${baseUrl}/packages`; // New: Redirect to landing page on cancellation
+    const successUrl = `${baseUrl}/packages`; // New: Redirect to packages page on success
+    const cancelUrl = `${baseUrl}/`; // New: Redirect to landing page on cancellation
 
     // Create a Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
