@@ -75,6 +75,9 @@ https://www.c-sharpcorner.com/article/deploying-a-next-js-application-using-azur
 
 npm run build
 
+7. Deploy with your static ngrok domain
+
+ngrok http --url=arguably-guiding-mammoth.ngrok-free.app 3000
 
 
 ## Usage

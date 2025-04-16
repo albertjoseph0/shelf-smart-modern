@@ -196,4 +196,43 @@ export async function createAccount(userId: string): Promise<Account> {
     console.error('Error creating account:', error);
     throw error;
   }
+}
+
+// Update account with Stripe info after successful checkout
+export async function updateAccountWithStripeInfo(
+  userId: string,
+  stripeCustomerId: string,
+  packageName: string,
+  status: string
+): Promise<Account | null> {
+  try {
+    const pool = await getConnection();
+    const result = await pool.request()
+      .input('userId', sql.NVarChar, userId)
+      .input('stripeCustomerId', sql.NVarChar, stripeCustomerId)
+      .input('package', sql.NVarChar, packageName)
+      .input('status', sql.NVarChar, status)
+      .input('updatedAt', sql.DateTime2, new Date())
+      .query(`
+        UPDATE Account
+        SET 
+          stripeCustomerId = @stripeCustomerId,
+          package = @package,
+          status = @status,
+          updatedAt = @updatedAt
+        WHERE userId = @userId;
+
+        SELECT * FROM Account WHERE userId = @userId;
+      `);
+
+    if (result.recordset.length === 0) {
+      console.warn(`No account found for userId ${userId} during update.`);
+      return null;
+    }
+
+    return result.recordset[0];
+  } catch (error) {
+    console.error(`Error updating account for userId ${userId}:`, error);
+    throw error;
+  }
 } 

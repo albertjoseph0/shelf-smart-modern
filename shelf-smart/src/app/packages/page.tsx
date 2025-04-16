@@ -1,29 +1,55 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { UserButton } from "@clerk/nextjs";
+import { useState } from 'react';
 
 export default function Packages() {
-  const [highlightAuth, setHighlightAuth] = useState(false);
-  const authButtonsRef = useRef<HTMLDivElement>(null);
+  // State to track which plan is being processed
+  const [processingPlan, setProcessingPlan] = useState<string | null>(null); 
 
-  // Function to handle CTA button clicks
-  const handleCtaClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    
-    // Scroll to top
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-    
-    // Highlight auth buttons
-    setHighlightAuth(true);
-    
-    // Remove highlight after animation completes
-    setTimeout(() => {
-      setHighlightAuth(false);
-    }, 2000);
+  // Price IDs from .env.local (hardcoded for client component simplicity)
+  const priceIds = {
+    starter: 'price_1R8MYqEmt0hEayiKqQPwwwLu', // process.env.STRIPE_STARTER_SUB
+    scholar: 'price_1RDU9bEmt0hEayiKhjkBuZDf', // process.env.STRIPE_SCHOLAR_SUB
+    savant: 'price_1RDU9yEmt0hEayiKSAF3wAyl'  // process.env.STRIPE_SAVANT_SUB
+  };
+
+  // Function to handle checkout button clicks
+  const handleCheckout = async (planKey: keyof typeof priceIds) => {
+    const priceId = priceIds[planKey];
+    if (!priceId) {
+      console.error('Price ID not found for plan:', planKey);
+      alert('Error initiating checkout. Price ID missing.');
+      return;
+    }
+    setProcessingPlan(planKey); // Set loading state for this plan
+
+    try {
+      const response = await fetch('/api/checkout_sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ priceId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Checkout session creation failed: ${response.statusText}`);
+      }
+
+      const { url } = await response.json();
+      if (!url) {
+        throw new Error('Checkout URL not received from server.');
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = url;
+
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert(`Error initiating checkout: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setProcessingPlan(null); // Reset loading state on error
+    } 
+    // Note: We don't reset processingPlan on success because the page redirects.
   };
 
   return (
@@ -71,10 +97,15 @@ export default function Packages() {
               <p className="text-gray-600 text-sm italic mb-6">Perfect for small collections or testing the waters.</p>
               
               <button 
-                onClick={handleCtaClick}
-                className="mt-auto bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition text-center w-full"
+                onClick={() => handleCheckout('starter')}
+                disabled={!!processingPlan} // Disable if any plan is processing
+                className={`mt-auto bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition text-center w-full ${
+                  processingPlan ? 'opacity-50 cursor-not-allowed' : ''
+                } ${
+                  processingPlan === 'starter' ? 'animate-pulse' : '' // Optional pulse animation
+                }`}
               >
-                Get Started
+                {processingPlan === 'starter' ? 'Processing...' : 'Get Started'}
               </button>
             </div>
             
@@ -106,10 +137,15 @@ export default function Packages() {
               <p className="text-gray-600 text-sm italic mb-6">Great for growing collections needing a bit more.</p>
               
               <button 
-                onClick={handleCtaClick}
-                className="mt-auto bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition text-center w-full"
+                onClick={() => handleCheckout('scholar')}
+                disabled={!!processingPlan}
+                className={`mt-auto bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition text-center w-full ${
+                  processingPlan ? 'opacity-50 cursor-not-allowed' : ''
+                } ${
+                  processingPlan === 'scholar' ? 'animate-pulse' : '' 
+                }`}
               >
-                Get Started
+                {processingPlan === 'scholar' ? 'Processing...' : 'Get Started'}
               </button>
             </div>
             
@@ -157,10 +193,15 @@ export default function Packages() {
               <p className="text-gray-600 text-sm italic mb-6">Don't let a single book go uncataloged—unlimited smarts for just $7 more!</p>
               
               <button 
-                onClick={handleCtaClick}
-                className="mt-auto bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition text-center w-full"
+                onClick={() => handleCheckout('savant')}
+                disabled={!!processingPlan}
+                className={`mt-auto bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition text-center w-full ${
+                  processingPlan ? 'opacity-50 cursor-not-allowed' : ''
+                } ${
+                  processingPlan === 'savant' ? 'animate-pulse' : '' 
+                }`}
               >
-                Get Started
+                {processingPlan === 'savant' ? 'Processing...' : 'Get Started'}
               </button>
             </div>
           </div>

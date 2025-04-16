@@ -1,5 +1,5 @@
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
-import { getAccountByUserId, createAccount } from '../../../lib/db'
+import { getAccountByUserId, createAccount } from '../../../../lib/db'
 
 export async function POST(req: Request) {
   try {
