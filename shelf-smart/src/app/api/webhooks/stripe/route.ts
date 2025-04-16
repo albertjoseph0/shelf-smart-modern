@@ -29,111 +29,138 @@ export async function POST(request: NextRequest) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
       const userId = session.metadata?.userId;
-      const stripeCustomerId = session.customer as string;
 
-      console.log(`Checkout session completed for userId: ${userId}`);
-
-      if (!userId || !stripeCustomerId) {
-        console.error('Webhook Error: userId or customerId missing from checkout session completed event');
-        return NextResponse.json({ error: 'Missing userId or customerId in session' }, { status: 400 });
-      }
-
-      try {
-        // Retrieve the session with line_items expanded
-        const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
-          session.id,
-          {
-            expand: ['line_items'],
-          }
-        );
-
-        // Extract the Price ID from the first line item
-        const lineItem = sessionWithLineItems.line_items?.data[0];
-        const priceId = lineItem?.price?.id;
-
-        if (!priceId) {
-            console.error(`Webhook Error: Price ID missing from line items for session ${session.id}`);
-            return NextResponse.json({ error: 'Price ID missing from line items' }, { status: 400 });
-        }
-
-        // Determine package name based on Price ID
-        let packageName: string;
-        switch (priceId) {
-            case process.env.STRIPE_STARTER_SUB:
-                packageName = 'Starter';
-                break;
-            case process.env.STRIPE_SCHOLAR_SUB:
-                packageName = 'Scholar';
-                break;
-            case process.env.STRIPE_SAVANT_SUB:
-                packageName = 'Savant';
-                break;
-            default:
-                console.warn(`Webhook Warning: Unrecognized Price ID ${priceId} for session ${session.id}`);
-                packageName = 'Unknown'; // Assign a default or handle as an error
-        }
-        
-        const status = 'ACTIVE';
-
-        console.log(`Attempting to update DB for userId: ${userId} with StripeCustomerId: ${stripeCustomerId}, Package: ${packageName}`);
-        await prisma.account.update({
-          where: { userId: userId },
-          data: {
-            stripeCustomerId: stripeCustomerId,
-            package: packageName,
-            status: status,
-          },
-        });
-        console.log(`DB update successful for userId: ${userId}`);
-      } catch (error) { // Catch errors from Stripe API call or DB update
-        console.error(`Webhook Error processing checkout.session.completed for userId ${userId}:`, error);
-        // Decide if this error should return 500 or still 200 to Stripe
-        // Returning 500 might cause Stripe to retry the webhook.
-        // Returning 200 acknowledges receipt even if processing failed.
-        // Let's return 500 for unexpected processing errors.
-        return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+      // Only log subscription completions, as per user clarification.
+      // The main logic for subscription creation/DB update is handled by 'customer.subscription.created'.
+      if (session.mode === 'subscription') {
+         console.log(`Checkout session completed for subscription for userId: ${userId}. Subscription details handled by customer.subscription.created.`);
+      } else {
+         // Log if a session with an unexpected mode completes, for debugging.
+         console.log(`Checkout session completed with unexpected mode: ${session.mode} for userId: ${userId}`);
       }
       break;
     }
-    case 'customer.subscription.created': {
+
+    case "customer.subscription.created": {
       const subscription = event.data.object as Stripe.Subscription;
       const userId = subscription.metadata?.userId;
       const stripeCustomerId = subscription.customer as string;
-      const status = subscription.status;
 
-      console.log(`Subscription created/updated for userId: ${userId}, Status: ${status}`);
-      if (userId) {
-        console.log(`DB update placeholder called for userId: ${userId}`);
+      console.log(`Subscription created for userId: ${userId}, CustomerId: ${stripeCustomerId}`);
+
+      if (!userId || !stripeCustomerId) {
+        console.error('Webhook Error: userId or stripeCustomerId missing from customer.subscription.created event');
+        return NextResponse.json({ error: 'Missing userId or customerId in subscription metadata' }, { status: 400 });
+      }
+
+      // Ensure subscription items exist and retrieve the priceId
+      const priceId = subscription.items?.data[0]?.price?.id;
+      if (!priceId) {
+          console.error(`Webhook Error: Price ID missing from subscription items for userId ${userId}`);
+          return NextResponse.json({ error: 'Price ID missing from subscription items' }, { status: 400 });
+      }
+
+      // Determine package name based on Price ID from .env.local
+      let packageName: string;
+      switch (priceId) {
+          case process.env.STRIPE_STARTER_SUB:
+              packageName = 'Starter'; // Ensure 'Starter' is valid in your schema
+              break;
+          case process.env.STRIPE_SCHOLAR_SUB:
+              packageName = 'Scholar'; // Ensure 'Scholar' is valid in your schema
+              break;
+          case process.env.STRIPE_SAVANT_SUB:
+              packageName = 'Savant'; // Ensure 'Savant' is valid in your schema
+              break;
+          default:
+              console.warn(`Webhook Warning: Unrecognized Price ID ${priceId} in subscription for userId ${userId}`);
+              packageName = 'Unknown'; // Handle unknown package
+              // Potentially return an error or assign a default package if 'Unknown' is not desired
+              return NextResponse.json({ error: `Unrecognized Price ID: ${priceId}` }, { status: 400 });
+      }
+
+      try {
+        await prisma.account.update({
+          where: { userId: userId },
+          data: {
+            status: "ACTIVE", // Directly set status to ACTIVE upon creation
+            package: packageName,
+            stripeCustomerId: stripeCustomerId,
+          },
+        });
+        console.log(`DB update successful for userId: ${userId}, Package: ${packageName}, Status: ACTIVE`);
+      } catch (error) {
+        console.error(`Webhook Error processing customer.subscription.created for userId ${userId}:`, error);
+        return NextResponse.json({ error: 'Webhook processing failed for subscription creation' }, { status: 500 });
       }
       break;
     }
-    case 'customer.subscription.updated': {
+
+    case "customer.subscription.updated": {
       const subscription = event.data.object as Stripe.Subscription;
       const userId = subscription.metadata?.userId;
-      const status = subscription.status;
-      
-      console.log(`Subscription updated for userId: ${userId}, Status: ${status}`);
-      if (userId) {
-        console.log(`DB update placeholder called for userId: ${userId}`);
+
+      console.log(`Subscription updated for userId: ${userId}, Status: ${subscription.status}`);
+
+      if (!userId) {
+        console.error('Webhook Error: userId missing from customer.subscription.updated event');
+        // If userId is missing, we can't update the specific user account.
+        // Log the error and return 200 to Stripe to prevent retries for this issue.
+        return NextResponse.json({ error: 'Missing userId in subscription metadata' });
+      }
+
+      // Determine the status based on cancel_at_period_end
+      const newStatus = subscription.cancel_at_period_end ? "CANCELLED" : "ACTIVE"; // Ensure these match your schema
+
+      try {
+        await prisma.account.update({
+          where: { userId: userId },
+          data: {
+            status: newStatus,
+            // Optionally update package if needed, though typically not changed here
+          },
+        });
+        console.log(`DB update successful for userId: ${userId}, Status set to: ${newStatus}`);
+      } catch (error) {
+        console.error(`Webhook Error processing customer.subscription.updated for userId ${userId}:`, error);
+        // Decide if a DB update failure should cause Stripe retry (500) or not (200)
+        return NextResponse.json({ error: 'Webhook processing failed for subscription update' }, { status: 500 });
       }
       break;
     }
-    case 'customer.subscription.deleted': {
+
+    case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
       const userId = subscription.metadata?.userId;
 
       console.log(`Subscription deleted for userId: ${userId}`);
-      if (userId) {
-        console.log(`DB update placeholder called for userId: ${userId}`);
+
+      if (!userId) {
+        console.error('Webhook Error: userId missing from customer.subscription.deleted event');
+        // Log error and return 200 to Stripe
+        return NextResponse.json({ error: 'Missing userId in subscription metadata' });
+      }
+
+      try {
+        await prisma.account.update({
+          where: { userId: userId },
+          data: {
+            status: "INACTIVE", // Ensure 'INACTIVE' is valid in your schema
+            package: null, // Set package to null as subscription is gone
+            stripeCustomerId: null, // Remove stripe customer ID
+          },
+        });
+        console.log(`DB update successful for userId: ${userId}, Subscription deleted, Status: INACTIVE`);
+      } catch (error) {
+        console.error(`Webhook Error processing customer.subscription.deleted for userId ${userId}:`, error);
+        return NextResponse.json({ error: 'Webhook processing failed for subscription deletion' }, { status: 500 });
       }
       break;
     }
-    case 'invoice.payment_failed': {
-      // Handle failed payment
-      console.log('Payment failed event:', event.data.object);
-      break;
-    }
+
+    // Removed 'invoice.payment_failed' and other cases as requested.
     default:
+      // It's good practice to handle unexpected event types, even if just logging.
       console.log(`Unhandled event type ${event.type}`);
   }
 

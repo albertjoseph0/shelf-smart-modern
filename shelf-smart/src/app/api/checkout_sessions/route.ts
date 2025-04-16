@@ -30,12 +30,13 @@ export async function POST(req: Request) {
 
     // Define success and cancel URLs
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const successUrl = `${baseUrl}/packages`; // New: Redirect to packages page on success
-    const cancelUrl = `${baseUrl}/`; // New: Redirect to landing page on cancellation
+    const successUrl = `${baseUrl}/upload`; // New: Redirect to packages page on success
+    const cancelUrl = `${baseUrl}/packages`; // New: Redirect to landing page on cancellation
+
+    console.log('userId from checkout_sessions', userId);
 
     // Create a Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items: [
         {
           price: priceId,
@@ -45,10 +46,12 @@ export async function POST(req: Request) {
       mode: 'subscription', // Assuming these are subscription plans
       success_url: successUrl,
       cancel_url: cancelUrl,
-      metadata: {
-        // Include the user ID in metadata to link the session to the user
-        userId: userId, // Use the extracted userId
-      },
+      // Add subscription_data to pass metadata to the subscription object
+      subscription_data: {
+        metadata: {
+          userId: userId,
+        }
+      }
     });
 
     // Return the session URL
