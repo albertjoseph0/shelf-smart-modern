@@ -1,10 +1,22 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-//const isProtectedRoute = createRouteMatcher(['/packages', '/upload'])
+// Define routes that require authentication
+const isProtectedRoute = createRouteMatcher([
+  '/upload(.*)',        // Protect the upload page
+  '/packages(.*)',       // Protect the packages page
+  '/api/checkout_sessions(.*)', // Protect the checkout API route
+  // Add any other routes that require login here (e.g., '/dashboard(.*)')
+]);
 
 export default clerkMiddleware(async (auth, req) => {
-  //if (isProtectedRoute(req)) await auth.protect()
-})
+  // Protect routes explicitly listed in isProtectedRoute
+  if (isProtectedRoute(req)) {
+    await auth.protect(); // Redirect unauthenticated users to sign-in
+  }
+  
+  // Routes not listed in isProtectedRoute (like '/', '/sign-in', '/api/webhooks/stripe') 
+  // will be publicly accessible by default.
+});
 
 export const config = {
   matcher: [
@@ -13,4 +25,4 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
-}
+};
