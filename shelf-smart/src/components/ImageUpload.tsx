@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface ImageUploadProps {
   onBooksAdded: () => void;
@@ -10,7 +10,35 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [limit, setLimit] = useState<number | null>(null);
+  const [count, setCount] = useState<number | null>(null);
+  const [limitError, setLimitError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch the user's limit and count
+  const fetchLimit = async () => {
+    try {
+      const res = await fetch('/api/upload/limit');
+      if (!res.ok) throw new Error('Failed to fetch upload limit');
+      const data = await res.json();
+      setLimit(data.limit);
+      setCount(data.count);
+      if (data.count >= data.limit) {
+        setLimitError("You’ve reached your upload limit. Upgrade your plan to upload more photos.");
+      } else {
+        setLimitError(null);
+      }
+    } catch (err) {
+      setLimitError('Unable to fetch upload limit. Try again later.');
+    }
+  };
+
+  // Fetch on mount
+  React.useEffect(() => {
+    fetchLimit();
+  }, []);
+
+
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -102,6 +130,8 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
       
       onBooksAdded();
       setUploadProgress(null);
+      // Re-fetch limit after upload
+      await fetchLimit();
       
     } catch (err) {
       console.error('Error processing image:', err);
@@ -134,7 +164,7 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          disabled={isLoading}
+          disabled={isLoading || (limit !== null && count !== null && count >= limit)}
           ref={fileInputRef}
           className="block w-full text-sm text-gray-500
                     file:mr-4 file:py-2 file:px-4
@@ -147,6 +177,16 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
         <p className="mt-1 text-xs text-gray-500">
           Upload a clear image of your bookshelf. Max file size: 10MB.
         </p>
+        {limit !== null && count !== null && (
+          <p className="mt-2 text-sm text-gray-700">
+            Uploads used: <span className="font-semibold">{count}</span> / <span className="font-semibold">{limit}</span>
+          </p>
+        )}
+        {limitError && (
+          <div className="mt-3 p-3 text-sm text-yellow-800 bg-yellow-100 rounded-lg">
+            {limitError}
+          </div>
+        )}
       </div>
       
       {isLoading && (
