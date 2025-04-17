@@ -11,7 +11,9 @@ export async function GET() {
 
   try {
     // Fetch books using Prisma
+    // Fetch only books belonging to the authenticated user
     const books = await prisma.book.findMany({
+      where: { userId },
       orderBy: {
         dateAdded: 'desc',
       },
@@ -42,6 +44,7 @@ export async function POST(request: NextRequest) {
         isbn10: book.isbn10 || null,
         isbn13: book.isbn13 || null,
         imageId: book.imageId || null,
+        userId, // Assign the authenticated user's userId
         // Prisma handles default for dateAdded and generates id
       }));
       
@@ -68,10 +71,11 @@ export async function POST(request: NextRequest) {
           isbn10: isbn10 || null,
           isbn13: isbn13 || null,
           imageId: imageId || null,
+          userId, // Assign the authenticated user's userId
           // Prisma handles default for dateAdded and generates id
         },
       });
-      return NextResponse.json({ book: newBook }, { status: 201 });
+      return NextResponse.json(newBook, { status: 201 });
     }
   } catch (error) {
     console.error('Error adding book(s):', error);

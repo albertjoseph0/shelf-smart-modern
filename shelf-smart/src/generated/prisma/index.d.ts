@@ -962,6 +962,7 @@ export namespace Prisma {
     isbn13: string | null
     dateAdded: Date | null
     imageId: string | null
+    userId: string | null
   }
 
   export type BookMaxAggregateOutputType = {
@@ -972,6 +973,7 @@ export namespace Prisma {
     isbn13: string | null
     dateAdded: Date | null
     imageId: string | null
+    userId: string | null
   }
 
   export type BookCountAggregateOutputType = {
@@ -982,6 +984,7 @@ export namespace Prisma {
     isbn13: number
     dateAdded: number
     imageId: number
+    userId: number
     _all: number
   }
 
@@ -994,6 +997,7 @@ export namespace Prisma {
     isbn13?: true
     dateAdded?: true
     imageId?: true
+    userId?: true
   }
 
   export type BookMaxAggregateInputType = {
@@ -1004,6 +1008,7 @@ export namespace Prisma {
     isbn13?: true
     dateAdded?: true
     imageId?: true
+    userId?: true
   }
 
   export type BookCountAggregateInputType = {
@@ -1014,6 +1019,7 @@ export namespace Prisma {
     isbn13?: true
     dateAdded?: true
     imageId?: true
+    userId?: true
     _all?: true
   }
 
@@ -1097,6 +1103,7 @@ export namespace Prisma {
     isbn13: string | null
     dateAdded: Date
     imageId: string | null
+    userId: string
     _count: BookCountAggregateOutputType | null
     _min: BookMinAggregateOutputType | null
     _max: BookMaxAggregateOutputType | null
@@ -1124,6 +1131,7 @@ export namespace Prisma {
     isbn13?: boolean
     dateAdded?: boolean
     imageId?: boolean
+    userId?: boolean
   }, ExtArgs["result"]["book"]>
 
 
@@ -1136,9 +1144,10 @@ export namespace Prisma {
     isbn13?: boolean
     dateAdded?: boolean
     imageId?: boolean
+    userId?: boolean
   }
 
-  export type BookOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "author" | "isbn10" | "isbn13" | "dateAdded" | "imageId", ExtArgs["result"]["book"]>
+  export type BookOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "author" | "isbn10" | "isbn13" | "dateAdded" | "imageId" | "userId", ExtArgs["result"]["book"]>
 
   export type $BookPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Book"
@@ -1151,6 +1160,7 @@ export namespace Prisma {
       isbn13: string | null
       dateAdded: Date
       imageId: string | null
+      userId: string
     }, ExtArgs["result"]["book"]>
     composites: {}
   }
@@ -1527,6 +1537,7 @@ export namespace Prisma {
     readonly isbn13: FieldRef<"Book", 'String'>
     readonly dateAdded: FieldRef<"Book", 'DateTime'>
     readonly imageId: FieldRef<"Book", 'String'>
+    readonly userId: FieldRef<"Book", 'String'>
   }
     
 
@@ -2806,7 +2817,8 @@ export namespace Prisma {
     isbn10: 'isbn10',
     isbn13: 'isbn13',
     dateAdded: 'dateAdded',
-    imageId: 'imageId'
+    imageId: 'imageId',
+    userId: 'userId'
   };
 
   export type BookScalarFieldEnum = (typeof BookScalarFieldEnum)[keyof typeof BookScalarFieldEnum]
@@ -2888,6 +2900,7 @@ export namespace Prisma {
     isbn13?: StringNullableFilter<"Book"> | string | null
     dateAdded?: DateTimeFilter<"Book"> | Date | string
     imageId?: StringNullableFilter<"Book"> | string | null
+    userId?: StringFilter<"Book"> | string
   }
 
   export type BookOrderByWithRelationInput = {
@@ -2898,6 +2911,7 @@ export namespace Prisma {
     isbn13?: SortOrderInput | SortOrder
     dateAdded?: SortOrder
     imageId?: SortOrderInput | SortOrder
+    userId?: SortOrder
   }
 
   export type BookWhereUniqueInput = Prisma.AtLeast<{
@@ -2911,6 +2925,7 @@ export namespace Prisma {
     isbn13?: StringNullableFilter<"Book"> | string | null
     dateAdded?: DateTimeFilter<"Book"> | Date | string
     imageId?: StringNullableFilter<"Book"> | string | null
+    userId?: StringFilter<"Book"> | string
   }, "id">
 
   export type BookOrderByWithAggregationInput = {
@@ -2921,6 +2936,7 @@ export namespace Prisma {
     isbn13?: SortOrderInput | SortOrder
     dateAdded?: SortOrder
     imageId?: SortOrderInput | SortOrder
+    userId?: SortOrder
     _count?: BookCountOrderByAggregateInput
     _max?: BookMaxOrderByAggregateInput
     _min?: BookMinOrderByAggregateInput
@@ -2937,6 +2953,7 @@ export namespace Prisma {
     isbn13?: StringNullableWithAggregatesFilter<"Book"> | string | null
     dateAdded?: DateTimeWithAggregatesFilter<"Book"> | Date | string
     imageId?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    userId?: StringWithAggregatesFilter<"Book"> | string
   }
 
   export type AccountWhereInput = {
@@ -3011,6 +3028,7 @@ export namespace Prisma {
     isbn13?: string | null
     dateAdded?: Date | string
     imageId?: string | null
+    userId: string
   }
 
   export type BookUncheckedCreateInput = {
@@ -3021,6 +3039,7 @@ export namespace Prisma {
     isbn13?: string | null
     dateAdded?: Date | string
     imageId?: string | null
+    userId: string
   }
 
   export type BookUpdateInput = {
@@ -3031,6 +3050,7 @@ export namespace Prisma {
     isbn13?: NullableStringFieldUpdateOperationsInput | string | null
     dateAdded?: DateTimeFieldUpdateOperationsInput | Date | string
     imageId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type BookUncheckedUpdateInput = {
@@ -3041,6 +3061,7 @@ export namespace Prisma {
     isbn13?: NullableStringFieldUpdateOperationsInput | string | null
     dateAdded?: DateTimeFieldUpdateOperationsInput | Date | string
     imageId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type BookCreateManyInput = {
@@ -3051,6 +3072,7 @@ export namespace Prisma {
     isbn13?: string | null
     dateAdded?: Date | string
     imageId?: string | null
+    userId: string
   }
 
   export type BookUpdateManyMutationInput = {
@@ -3061,6 +3083,7 @@ export namespace Prisma {
     isbn13?: NullableStringFieldUpdateOperationsInput | string | null
     dateAdded?: DateTimeFieldUpdateOperationsInput | Date | string
     imageId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type BookUncheckedUpdateManyInput = {
@@ -3071,6 +3094,7 @@ export namespace Prisma {
     isbn13?: NullableStringFieldUpdateOperationsInput | string | null
     dateAdded?: DateTimeFieldUpdateOperationsInput | Date | string
     imageId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type AccountCreateInput = {
@@ -3191,6 +3215,7 @@ export namespace Prisma {
     isbn13?: SortOrder
     dateAdded?: SortOrder
     imageId?: SortOrder
+    userId?: SortOrder
   }
 
   export type BookMaxOrderByAggregateInput = {
@@ -3201,6 +3226,7 @@ export namespace Prisma {
     isbn13?: SortOrder
     dateAdded?: SortOrder
     imageId?: SortOrder
+    userId?: SortOrder
   }
 
   export type BookMinOrderByAggregateInput = {
@@ -3211,6 +3237,7 @@ export namespace Prisma {
     isbn13?: SortOrder
     dateAdded?: SortOrder
     imageId?: SortOrder
+    userId?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {

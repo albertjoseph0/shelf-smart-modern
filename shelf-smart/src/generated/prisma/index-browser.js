@@ -125,7 +125,8 @@ exports.Prisma.BookScalarFieldEnum = {
   isbn10: 'isbn10',
   isbn13: 'isbn13',
   dateAdded: 'dateAdded',
-  imageId: 'imageId'
+  imageId: 'imageId',
+  userId: 'userId'
 };
 
 exports.Prisma.AccountScalarFieldEnum = {

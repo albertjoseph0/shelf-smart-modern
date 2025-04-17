@@ -23,6 +23,7 @@ model Book {
   isbn13    String?  @db.NVarChar(20)
   dateAdded DateTime @default(now()) @db.DateTime
   imageId   String?  @db.NVarChar(255)
+  userId    String   @db.NVarChar(255) // Clerk userId association
 
   @@map("books") // Map to the existing 'books' table
 }
