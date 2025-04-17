@@ -28,7 +28,25 @@ export default function ExportButton() {
       }
       
       // Convert to CSV using PapaParse
-      const csv = unparse(books);
+      // Explicitly type 'book' to fix lint error
+      type Book = {
+        title: string;
+        author?: string;
+        isbn10?: string;
+        isbn13?: string;
+        dateAdded?: string | Date;
+      };
+      const csv = unparse(
+        (books as Book[]).map((book: Book) => ({
+          Title: book.title,
+          Author: book.author || '',
+          ISBN10: book.isbn10 || '',
+          ISBN13: book.isbn13 || '',
+          'Date Added': book.dateAdded
+            ? new Date(book.dateAdded).toISOString().split('T')[0]
+            : ''
+        }))
+      );
       
       // Create a blob and download link
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

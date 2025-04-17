@@ -15,28 +15,12 @@ export async function GET() {
   try {
     // Fetch books using Prisma
     const books = await prisma.book.findMany({
+      where: { userId },
       orderBy: {
         dateAdded: 'desc',
       },
     });
-
-    // Convert books data to CSV format
-    const csvHeader = 'Title,Author,ISBN10,ISBN13,Date Added\n';
-    const csvBody = books
-      .map(
-        (book) =>
-          `"${book.title}","${book.author || ''}","${book.isbn10 || ''}","${book.isbn13 || ''}","${book.dateAdded.toISOString()}"`
-      )
-      .join('\n');
-    const csvContent = csvHeader + csvBody;
-
-    return new NextResponse(csvContent, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/csv',
-        'Content-Disposition': 'attachment; filename="books.csv"',
-      },
-    });
+    return NextResponse.json({ books });
   } catch (error) {
     console.error('Error exporting books:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
