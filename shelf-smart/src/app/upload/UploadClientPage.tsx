@@ -30,6 +30,14 @@ export default function UploadPage() {
             </div>
             <div className="flex items-center gap-4">
               <p className="text-gray-600">Catalog your physical book collection from shelf images</p>
+              <a 
+                href="https://billing.stripe.com/p/login/test_3csdT7bYv2ucd1u144" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-blue-600 hover:text-blue-800 underline"
+              >
+                Manage Subscription
+              </a>
               <UserButton afterSignOutUrl="/" />
             </div>
           </header>
