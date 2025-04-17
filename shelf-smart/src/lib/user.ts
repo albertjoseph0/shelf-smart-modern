@@ -16,8 +16,8 @@ export async function getSubscriptionStatus(userId: string): Promise<boolean> {
       select: { status: true }, // Only select the status field for efficiency
     });
 
-    // Check if account exists and status is exactly "ACTIVE"
-    return account?.status === "ACTIVE";
+    // Check if account exists and status is not equal to "INACTIVE"
+    return account?.status !== "INACTIVE";
 
   } catch (error) {
     console.error(`Error fetching subscription status for userId ${userId}:`, error);

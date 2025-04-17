@@ -109,9 +109,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Missing userId in subscription metadata' });
       }
 
-      // Determine the status based on cancel_at_period_end
+      // if subscription.cancel_at_period_end is true, set status to "CANCELLED"
+      // otherwise, set status to "ACTIVE"    
       const newStatus = subscription.cancel_at_period_end ? "CANCELLED" : "ACTIVE"; // Ensure these match your schema
-
+    
       try {
         await prisma.account.update({
           where: { userId: userId },
