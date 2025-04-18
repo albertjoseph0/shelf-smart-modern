@@ -2,6 +2,15 @@ import { prisma } from '@/lib/prisma'; // Import prisma client
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 
+// Define input shape for incoming books
+type BookInput = {
+  title: string;
+  author?: string | null;
+  isbn10?: string | null;
+  isbn13?: string | null;
+  imageId?: string | null;
+};
+
 // GET /api/books - Fetch all books
 export async function GET() {
   const { userId } = await auth();
@@ -38,7 +47,7 @@ export async function POST(request: NextRequest) {
     // Check if the request is for adding multiple books
     if (Array.isArray(requestData.books)) {
       // Add multiple books using Prisma
-      const booksData = requestData.books.map((book: any) => ({
+      const booksData = (requestData.books as BookInput[]).map((book: BookInput) => ({
         title: book.title,
         author: book.author || null,
         isbn10: book.isbn10 || null,

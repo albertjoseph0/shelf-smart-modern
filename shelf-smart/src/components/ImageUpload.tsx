@@ -29,6 +29,7 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
         setLimitError(null);
       }
     } catch (err) {
+      console.error('Error fetching upload limit:', err);
       setLimitError('Unable to fetch upload limit. Try again later.');
     }
   };
