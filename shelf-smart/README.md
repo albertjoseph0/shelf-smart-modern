@@ -75,10 +75,25 @@ https://www.c-sharpcorner.com/article/deploying-a-next-js-application-using-azur
 
 npm run build
 
+6.1: How Azure builds the app
+# 1. Clean slate
+rm -rf node_modules .next
+
+# 2. Install everything (so build works)
+npm install            # or `npm ci`
+
+# 3. Build your Next.js app
+npm run build
+
+# 4. Prune out dev‑only deps, matching Azure’s eventual runtime
+npm prune --production
+
+# 5. Run your startup command
+npm run start
+
 7. Deploy with your static ngrok domain
 
 ngrok http --url=arguably-guiding-mammoth.ngrok-free.app 3000
-
 
 ## Usage
 
