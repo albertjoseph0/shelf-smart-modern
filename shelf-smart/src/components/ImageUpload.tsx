@@ -155,37 +155,13 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
     <div className="w-full max-w-md mx-auto mb-8 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Upload Bookshelf Image</h2>
       
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Select a photo of your bookshelf
-        </label>
-        
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          disabled={isLoading || (limit !== null && count !== null && count >= limit)}
-          ref={fileInputRef}
-          className="block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-md file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100"
-        />
-        
-        <p className="mt-1 text-xs text-gray-500">
-          Upload a clear image of your bookshelf. Max file size: 10MB.
-        </p>
+      <div className="mb-4 flex items-center justify-between bg-gray-50 border border-dashed border-gray-300 rounded-md p-4">
+        <input id="file-upload" type="file" accept="image/*" onChange={handleFileChange} disabled={isLoading || (limit !== null && count !== null && count >= limit)} ref={fileInputRef} className="flex-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         {limit !== null && count !== null && (
-          <p className="mt-2 text-sm text-gray-700">
-            Uploads used: <span className="font-semibold">{count}</span> / <span className="font-semibold">{limit}</span>
-          </p>
+          <span className="text-sm text-gray-700 font-medium">{count}/{limit}</span>
         )}
         {limitError && (
-          <div className="mt-3 p-3 text-sm text-yellow-800 bg-yellow-100 rounded-lg">
-            {limitError}
-          </div>
+          <div className="text-sm text-yellow-800 bg-yellow-100 rounded-lg px-2 py-1">{limitError}</div>
         )}
       </div>
       
