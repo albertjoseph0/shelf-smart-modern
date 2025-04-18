@@ -430,14 +430,14 @@ export default function LandingPage() {
               <div>
                 <h4 className="text-lg font-semibold mb-4">Legal</h4>
                 <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white">Terms of Service</a></li>
+                  <li><Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
+                  <li><Link href="/terms" className="text-gray-400 hover:text-white">Terms of Service</Link></li>
                 </ul>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>© {new Date().getFullYear()} Shelf Smart. All rights reserved.</p>
+            <p> {new Date().getFullYear()} Shelf Smart. All rights reserved.</p>
           </div>
         </div>
       </footer>
