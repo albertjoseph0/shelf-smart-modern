@@ -69,31 +69,43 @@ yarn dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-6. Deploy to azure app service 
+## Deployment
 
-https://www.c-sharpcorner.com/article/deploying-a-next-js-application-using-azure-app-service/
+### Azure App Service
+- See [Deploying a Next.js Application Using Azure App Service](https://www.c-sharpcorner.com/article/deploying-a-next-js-application-using-azure-app-service/)
+- Build your app:
+  ```bash
+  npm run build
+  ```
+- Typical Azure build steps:
+  ```bash
+  # 1. Clean slate
+  rm -rf node_modules .next
 
-npm run build
+  # 2. Install dependencies
+  npm install  # or `npm ci`
 
-6.1: How Azure builds the app
-# 1. Clean slate
-rm -rf node_modules .next
+  # 3. Build your Next.js app
+  npm run build
 
-# 2. Install everything (so build works)
-npm install            # or `npm ci`
+  # 4. Prune out dev‑only dependencies
+  npm prune --production
 
-# 3. Build your Next.js app
-npm run build
+  # 5. Start your app
+  npm run start
+  ```
 
-# 4. Prune out dev‑only deps, matching Azure’s eventual runtime
-npm prune --production
+### Local Tunnel (ngrok)
+- Deploy with your static ngrok domain:
+  ```bash
+  ngrok http --url=arguably-guiding-mammoth.ngrok-free.app 3000
+  ```
 
-# 5. Run your startup command
-npm run start
-
-7. Deploy with your static ngrok domain
-
-ngrok http --url=arguably-guiding-mammoth.ngrok-free.app 3000
+### Initialize Database Schema
+- If your Azure SQL database is empty, create the schema with:
+  ```bash
+  npx prisma db push
+  ```
 
 ## Usage
 

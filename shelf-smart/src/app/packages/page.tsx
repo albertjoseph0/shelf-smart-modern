@@ -8,9 +8,9 @@ export default function Packages() {
 
   // Price IDs from .env.local (hardcoded for client component simplicity)
   const priceIds = {
-    starter: 'price_1R8MYqEmt0hEayiKqQPwwwLu', // process.env.STRIPE_STARTER_SUB
-    scholar: 'price_1RDU9bEmt0hEayiKhjkBuZDf', // process.env.STRIPE_SCHOLAR_SUB
-    savant: 'price_1RDU9yEmt0hEayiKSAF3wAyl'  // process.env.STRIPE_SAVANT_SUB
+    starter: process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID!,
+    scholar: process.env.NEXT_PUBLIC_STRIPE_SCHOLAR_PRICE_ID!,
+    savant: process.env.NEXT_PUBLIC_STRIPE_SAVANT_PRICE_ID!
   };
 
   // Function to handle checkout button clicks

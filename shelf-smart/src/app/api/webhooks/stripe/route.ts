@@ -62,13 +62,13 @@ export async function POST(request: NextRequest) {
       // Determine package name based on Price ID from .env.local
       let packageName: string;
       switch (priceId) {
-          case process.env.STRIPE_STARTER_SUB:
+          case process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID:
               packageName = 'Starter'; // Ensure 'Starter' is valid in your schema
               break;
-          case process.env.STRIPE_SCHOLAR_SUB:
+          case process.env.NEXT_PUBLIC_STRIPE_SCHOLAR_PRICE_ID:
               packageName = 'Scholar'; // Ensure 'Scholar' is valid in your schema
               break;
-          case process.env.STRIPE_SAVANT_SUB:
+          case process.env.NEXT_PUBLIC_STRIPE_SAVANT_PRICE_ID:
               packageName = 'Savant'; // Ensure 'Savant' is valid in your schema
               break;
           default:

@@ -166,12 +166,11 @@ const config = {
     "db"
   ],
   "activeProvider": "sqlserver",
-  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "value": "sqlserver://shelf-smart-server.database.windows.net:1433;database=shelf-smart-database;user=shelf-smart-server-admin@shelf-smart-server;password=Action-Storm-Door-Desire-1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30"
       }
     }
   },

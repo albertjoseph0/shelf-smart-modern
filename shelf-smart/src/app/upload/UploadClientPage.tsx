@@ -32,7 +32,7 @@ export default function UploadPage() {
               <p className="text-sm text-gray-500 ml-8 mt-1">Catalog your physical book collection from shelf images</p>
             </div>
             <div className="flex items-center gap-3 mt-4 sm:mt-0">
-              <Link href="https://billing.stripe.com/p/login/test_3csdT7bYv2ucd1u144" target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm text-blue-600 bg-blue-50 rounded hover:bg-blue-100">
+              <Link href={process.env.NEXT_PUBLIC_STRIPE_MANAGE_SUBSCRIPTION_URL!} target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm text-blue-600 bg-blue-50 rounded hover:bg-blue-100">
                 Manage Subscription
               </Link>
               <UserButton afterSignOutUrl="/" />
