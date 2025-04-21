@@ -122,7 +122,7 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
       }
 
       const savedBooks = await saveResponse.json();
-      console.log(`Successfully saved ${savedBooks.length} books to database`);
+      //console.log(`Successfully saved ${savedBooks.length} books to database`);
       
       // Reset form and notify parent
       if (fileInputRef.current) {
