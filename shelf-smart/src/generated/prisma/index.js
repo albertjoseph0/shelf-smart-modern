@@ -170,7 +170,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "sqlserver://shelf-smart-server.database.windows.net:1433;database=shelf-smart-database;user=shelf-smart-server-admin@shelf-smart-server;password=Action-Storm-Door-Desire-1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30"
+        "value": "sqlserver://shelfsmart-server.database.windows.net:1433;database=shelfsmart-database;user=shelfsmart-server-admin@shelfsmart-server;password=Action-Storm-Door-Desire-1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30"
       }
     }
   },
