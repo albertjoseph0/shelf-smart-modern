@@ -186,7 +186,11 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-gray-50 p-6 rounded-lg shadow">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
+                <img
+                  src="https://randomuser.me/api/portraits/women/44.jpg"
+                  alt="Sarah Johnson profile"
+                  className="w-12 h-12 rounded-full mr-4 object-cover"
+                />
                 <div>
                   <h4 className="font-semibold">Sarah Johnson</h4>
                   <p className="text-gray-500 text-sm">Book Collector</p>
@@ -198,7 +202,11 @@ export default function LandingPage() {
             </div>
             <div className="bg-gray-50 p-6 rounded-lg shadow">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
+                <img
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  alt="David Chen profile"
+                  className="w-12 h-12 rounded-full mr-4 object-cover"
+                />
                 <div>
                   <h4 className="font-semibold">David Chen</h4>
                   <p className="text-gray-500 text-sm">Librarian</p>
