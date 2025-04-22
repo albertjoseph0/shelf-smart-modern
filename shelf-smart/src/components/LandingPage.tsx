@@ -92,11 +92,14 @@ export default function LandingPage() {
             </button>
           </div>
           <div className="md:w-1/2 flex justify-center">
-            <div className="relative w-full max-w-md h-80 bg-gray-200 rounded-lg shadow-lg">
-              {/* Placeholder for hero image */}
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                Bookshelf Image
-              </div>
+            <div className="relative w-full max-w-[32.2rem] h-[23rem] bg-gray-200 rounded-lg shadow-lg">
+              {/* Hero image: Bookshelf to CSV demo */}
+              <img 
+                src="/bookshelf-to-csv-demo.png" 
+                alt="Bookshelf to CSV demo" 
+                className="absolute inset-0 w-full h-full object-contain rounded-lg" 
+                style={{ background: '#f3f4f6' }}
+              />
             </div>
           </div>
         </div>

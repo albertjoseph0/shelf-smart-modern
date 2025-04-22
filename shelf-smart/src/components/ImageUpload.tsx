@@ -24,7 +24,7 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
       setLimit(data.limit);
       setCount(data.count);
       if (data.count >= data.limit) {
-        setLimitError("You’ve reached your upload limit. Upgrade your plan to upload more photos.");
+        setLimitError("You've reached your upload limit. Upgrade your plan to upload more photos.");
       } else {
         setLimitError(null);
       }
@@ -121,7 +121,7 @@ export default function ImageUpload({ onBooksAdded }: ImageUploadProps) {
         throw new Error(errorData.error || 'Failed to save books to database');
       }
 
-      const savedBooks = await saveResponse.json();
+      // const savedBooks = await saveResponse.json();
       //console.log(`Successfully saved ${savedBooks.length} books to database`);
       
       // Reset form and notify parent
