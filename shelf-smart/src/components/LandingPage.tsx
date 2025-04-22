@@ -9,6 +9,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import Image from 'next/image';
 
 export default function LandingPage() {
   const [highlightAuth, setHighlightAuth] = useState(false);
@@ -94,11 +95,13 @@ export default function LandingPage() {
           <div className="md:w-1/2 flex justify-center">
             <div className="relative w-full max-w-[32.2rem] h-[23rem] bg-gray-200 rounded-lg shadow-lg">
               {/* Hero image: Bookshelf to CSV demo */}
-              <img 
+              <Image 
                 src="/bookshelf-to-csv-demo.png" 
                 alt="Bookshelf to CSV demo" 
                 className="absolute inset-0 w-full h-full object-contain rounded-lg" 
                 style={{ background: '#f3f4f6' }}
+                fill
+                priority
               />
             </div>
           </div>
@@ -186,10 +189,12 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-gray-50 p-6 rounded-lg shadow">
               <div className="flex items-center mb-4">
-                <img
+                <Image
                   src="https://randomuser.me/api/portraits/women/44.jpg"
                   alt="Sarah Johnson profile"
                   className="w-12 h-12 rounded-full mr-4 object-cover"
+                  width={48}
+                  height={48}
                 />
                 <div>
                   <h4 className="font-semibold">Sarah Johnson</h4>
@@ -202,10 +207,12 @@ export default function LandingPage() {
             </div>
             <div className="bg-gray-50 p-6 rounded-lg shadow">
               <div className="flex items-center mb-4">
-                <img
+                <Image
                   src="https://randomuser.me/api/portraits/men/32.jpg"
                   alt="David Chen profile"
                   className="w-12 h-12 rounded-full mr-4 object-cover"
+                  width={48}
+                  height={48}
                 />
                 <div>
                   <h4 className="font-semibold">David Chen</h4>

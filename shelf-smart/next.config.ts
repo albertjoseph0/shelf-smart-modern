@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    domains: ['randomuser.me'],
+  },
   /* config options here */
   async redirects() {
     return process.env.NODE_ENV === 'production' ? [
